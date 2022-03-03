@@ -1,0 +1,135 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Crypto_currency_market_updates Api",
+    "description": "This API will update Crypto_currency_market data",
+    "contact": {
+      "email": "mohd.salman@ltts.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "dev server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Market updates and details",
+      "description": "Market Live updates",
+    },
+    {
+      "name": "User",
+      "description": "User Authentication"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "User login successfully and generate JWT token",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "username for login",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "Password for login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "password"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User login Successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Auth"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username and password",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/market-data": {
+      "get": {
+        "tags": [
+          "Crypto_currency_market_updates and details"
+        ],
+        "summary": "Get Cripto currency market updates",
+        "responses": {
+          "200": {
+            "description": "Cripto currency market updates Successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/abc"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Please provide token",
+            "content": {}
+          },
+          "401": {
+            "description": "Please provide valid token",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Crypto_currency_market_updates and details"
+        ],
+        "summary": "Get Cripto currency market updates",
+        "parameters": [
+          {
+            "name": "market",
+            "in": "query",
+            "description": "Getting details of market summary when we are passing market in request param",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cripto currency market updates Successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/abc"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Market",
+            "content": {}
+          }
+        }
+      }
+    }
+  }
+}
