@@ -1,27 +1,26 @@
 from flask import Flask,jsonify,Response,make_response
 from flask_restful import Resource,Api
 import requests
-# from .constants.http_status_codes import ERROR_TECHNICAL,ERROR_BAD_REQUEST
 from .config.config import market_summary_url, market_access_url,JWT_SECRET_KEY
 import logging
 import json
-from flask import request
 from flask_mongoengine import MongoEngine
 from flask_jwt_extended import jwt_required, JWTManager
 from decouple import config
 from flask_jwt_extended.exceptions import NoAuthorizationError,JWTExtendedException
+from .errors import InternalServerError,UnauthorizedError,UnauthorizedTokenError,SchemaValidationError,EmailAlreadyExistsError
+from .errors import errors
 
+# logger configuration
 logger = logging.getLogger(__name__)
-# logger
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
-
-
 app = Flask(__name__)
-api = Api(app)
+api = Api(app, errors=errors)
 
+# MongoDB configuration
 app.config['MONGODB_SETTINGS'] = {
     'db': 'User12',
     'host': 'localhost',
@@ -30,30 +29,35 @@ app.config['MONGODB_SETTINGS'] = {
 db = MongoEngine()
 db.init_app(app)
 
-app.config["JWT_SECRET_KEY"] = "super-secret"
-# Setup the Flask-JWT-Extended extension
+# SetUp the Flask JWT Extended extension
 jwt = JWTManager(app)
+app.config["JWT_SECRET_KEY"] = "super-secret"
+
 
 class Market_Summary(Resource):
 	@jwt_required()
 	def get(self):
 		"""
-		:summary:-> This api for return all market summary
+		:summary:-> This api used for return all market summary updates
+		# Todo-> Need to check exception later
 		"""
 		try:
 			response = requests.get(url=market_summary_url).json()
 			return Response(response=json.dumps({"data": {"result": response}}),status=200,mimetype="application/json")
 		except (NoAuthorizationError,JWTExtendedException) as error:
-			logger.error("Invalid token => ", str(error))
+			app.logger.error("Invalid token => ", str(error))
+			raise UnauthorizedTokenError
 		except Exception as error:
 			app.logger.error(f"Error occurred: {str(error)}")
-			return ''
-			# return Response(response=json.dumps({"message": ERROR_BAD_REQUEST, "status": 400}), status=400)
+			raise InternalServerError
+
 	@jwt_required()
 	def post(self):
 		"""
 		:summary:-> This API will return of a specific market details.
-		:param:-> {market = btc-ltc}
+		:param:-> {
+					market = btc-ltc
+				  }
 		:return:
 				{
 				"data": {
@@ -81,31 +85,30 @@ class Market_Summary(Resource):
 				}
 			}
 		"""
+		# Todo-> Need to check exception and some validation as per requirement later
 		try:
 			market_params  = request.args.get('market','') or None
 			response = requests.post(url=market_access_url,params={"market":market_params}).json()
 			return Response(response=json.dumps({"data": {"result": response}}), status=200, mimetype="application/json")
 		except (NoAuthorizationError,JWTExtendedException) as error:
-			logger.error("Invalid token => ", str(error))
+			app.logger.error("Invalid token => ", str(error))
+			raise UnauthorizedTokenError
 		except Exception as error:
 			app.logger.error(f"Error occurred: {str(error)}")
-			return ''
-			# return Response(response=json.dumps({"message": ERROR_BAD_REQUEST, "status": 400}), status=400)
+			raise InternalServerError
 
-from flask import Flask,request,make_response
-import jwt
+
+# Todo-> Need to be divide API or structure using Blueprint or any other way
+
 from flask import request
 from datetime import datetime,timedelta
 from flask_restful import Resource,Api
 from .model import User
 import datetime
-from flask_bcrypt import generate_password_hash,check_password_hash
-from datetime import timedelta
 from flask_jwt_extended import create_access_token,create_refresh_token,get_jwt_identity
-from mongoengine.errors import FieldDoesNotExist,NotUniqueError,DoesNotExist
+from mongoengine.errors import FieldDoesNotExist,NotUniqueError,DoesNotExist,ValidationError,InvalidQueryError
 
-
-
+# Todo: Need to be check exception later
 class Signup_Api(Resource):
 	def post(self):
 		try:
@@ -114,11 +117,15 @@ class Signup_Api(Resource):
 			user.hash_password()
 			user.save()
 			id = user.id
-			# return {'id': str(id)}, 200
 			return jsonify({"result":"User Signup Successfully"})
-		except Exception as error:
-			logger.error("Error occurred => ", str(error))
+		except FieldDoesNotExist:
+			raise SchemaValidationError
+		except NotUniqueError:
+			raise EmailAlreadyExistsError
+		except Exception as e:
+			raise InternalServerError
 
+# Todo: Need to be check exception later
 class Login_Api(Resource):
 	def post(self):
 		try:
@@ -130,10 +137,14 @@ class Login_Api(Resource):
 			expires = datetime.timedelta(days=7)
 			access_token = create_access_token(identity=str(user.id), expires_delta=expires)
 			return {'token': access_token}, 200
+		except (UnauthorizedError, DoesNotExist):
+			raise UnauthorizedError
 		except Exception as error:
 			logger.error("Error occurred => ", str(error))
+			raise InternalServerError
 
 
+# Todo:-> Need to be bifurcate later
 api.add_resource(Signup_Api,'/user_signup')
 api.add_resource(Login_Api,'/user_Login')
 api.add_resource(Market_Summary,'/market-data')
