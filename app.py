@@ -2,11 +2,14 @@ from flask import Flask,jsonify,Response,make_response
 from flask_restful import Resource,Api
 import requests
 # from .constants.http_status_codes import ERROR_TECHNICAL,ERROR_BAD_REQUEST
-from .config.config import market_summary_url, market_access_url
+from .config.config import market_summary_url, market_access_url,JWT_SECRET_KEY
 import logging
 import json
 from flask import request
 from flask_mongoengine import MongoEngine
+from flask_jwt_extended import jwt_required, JWTManager
+from decouple import config
+from flask_jwt_extended.exceptions import NoAuthorizationError,JWTExtendedException
 
 logger = logging.getLogger(__name__)
 # logger
@@ -19,7 +22,6 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
 app = Flask(__name__)
 api = Api(app)
 
-
 app.config['MONGODB_SETTINGS'] = {
     'db': 'User12',
     'host': 'localhost',
@@ -28,8 +30,12 @@ app.config['MONGODB_SETTINGS'] = {
 db = MongoEngine()
 db.init_app(app)
 
+app.config["JWT_SECRET_KEY"] = "super-secret"
+# Setup the Flask-JWT-Extended extension
+jwt = JWTManager(app)
 
 class Market_Summary(Resource):
+	@jwt_required()
 	def get(self):
 		"""
 		:summary:-> This api for return all market summary
@@ -37,11 +43,13 @@ class Market_Summary(Resource):
 		try:
 			response = requests.get(url=market_summary_url).json()
 			return Response(response=json.dumps({"data": {"result": response}}),status=200,mimetype="application/json")
+		except (NoAuthorizationError,JWTExtendedException) as error:
+			logger.error("Invalid token => ", str(error))
 		except Exception as error:
 			app.logger.error(f"Error occurred: {str(error)}")
 			return ''
 			# return Response(response=json.dumps({"message": ERROR_BAD_REQUEST, "status": 400}), status=400)
-
+	@jwt_required()
 	def post(self):
 		"""
 		:summary:-> This API will return of a specific market details.
@@ -77,6 +85,8 @@ class Market_Summary(Resource):
 			market_params  = request.args.get('market','') or None
 			response = requests.post(url=market_access_url,params={"market":market_params}).json()
 			return Response(response=json.dumps({"data": {"result": response}}), status=200, mimetype="application/json")
+		except (NoAuthorizationError,JWTExtendedException) as error:
+			logger.error("Invalid token => ", str(error))
 		except Exception as error:
 			app.logger.error(f"Error occurred: {str(error)}")
 			return ''
@@ -87,18 +97,21 @@ import jwt
 from flask import request
 from datetime import datetime,timedelta
 from flask_restful import Resource,Api
-from .model import User,hash_password,check_password
+from .model import User
 import datetime
 from flask_bcrypt import generate_password_hash,check_password_hash
 from datetime import timedelta
-from flask_jwt_extended import create_access_token,create_refresh_token
+from flask_jwt_extended import create_access_token,create_refresh_token,get_jwt_identity
+from mongoengine.errors import FieldDoesNotExist,NotUniqueError,DoesNotExist
+
+
 
 class Signup_Api(Resource):
 	def post(self):
 		try:
 			body = request.get_json()
 			user = User(**body)
-			hash_password(user)
+			user.hash_password()
 			user.save()
 			id = user.id
 			# return {'id': str(id)}, 200
@@ -111,7 +124,7 @@ class Login_Api(Resource):
 		try:
 			body = request.get_json()
 			user = User.objects.get(email=body.get('email'))
-			authorized = check_password(body.get('password'))
+			authorized = user.check_password(body.get('password'))
 			if not authorized:
 				return {'error': 'Email or password invalid'}, 401
 			expires = datetime.timedelta(days=7)
@@ -127,4 +140,3 @@ api.add_resource(Market_Summary,'/market-data')
 
 if __name__ == '__main__':
 	app.run(debug=True)
-

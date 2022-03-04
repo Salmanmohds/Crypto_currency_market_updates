@@ -5,6 +5,8 @@ market_access_url="https://api.bittrex.com/api/v1.1/public/getmarketsummary"
 
 SECRET_KEY="u4J9g1BJ0m2etnphSCqalw"
 
+JWT_SECRET_KEY='t1NP63m4wnBg6nyHYKfmc2TpCOGI4nss'
+
 
 JWT_AUTH = {
     'JWT_VERIFY': True,

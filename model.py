@@ -8,9 +8,11 @@ class User(db.Document):
  mobile_number = db.StringField(required=True, min_length=10)
 
 
-def hash_password(self):
- self.password = generate_password_hash(self.password).decode('utf8')
+ def hash_password(self):
+  self.password = generate_password_hash(self.password).decode('utf8')
+  print(self.password)
 
-def check_password(self, password):
- return check_password_hash(self.password, password)
-
+ def check_password(self, password):
+  print("password_self",self.password)
+  print(password)
+  return check_password_hash(self.password, password)
