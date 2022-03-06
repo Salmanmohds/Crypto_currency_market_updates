@@ -8,6 +8,7 @@ from flask_jwt_extended import create_access_token,create_refresh_token,get_jwt_
 from mongoengine.errors import FieldDoesNotExist,NotUniqueError,DoesNotExist,ValidationError,InvalidQueryError
 from .errors import InternalServerError,UnauthorizedError,UnauthorizedTokenError,SchemaValidationError,EmailAlreadyExistsError
 from database.model import User
+
 # logger configuration
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',

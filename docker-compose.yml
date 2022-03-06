@@ -1,0 +1,21 @@
+version: "2"
+services:
+  mongo_db:
+    container_name: db_container
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+
+  api:
+    build: .
+    ports:
+      - 5000:5000
+    command: python app.py --host 0.0.0.0
+    environment:
+      host: mongodb://mongo_db:27017/User12
+    depends_on:
+      - mongo_db
+
+volumes:
+  mongo_db: {}

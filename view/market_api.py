@@ -7,10 +7,7 @@ from flask_jwt_extended.exceptions import NoAuthorizationError,JWTExtendedExcept
 from .errors import InternalServerError, UnauthorizedTokenError
 from flask import request
 from flask_restful import Resource
-
-# Todo:->  Need to be define inside .env file later
-market_summary_url='https://api.bittrex.com/api/v1.1/public/getmarketsummaries'
-market_access_url='https://api.bittrex.com/api/v1.1/public/getmarketsummary'
+from settings import market_access_url,market_summary_url
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
@@ -18,6 +15,8 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG)
 
 class Market_Summary(Resource):
+	# method_decorators = [jwt_required]
+	# decorators = (jwt_required(),)
 	@jwt_required()
 	def get(self):
 		"""
@@ -34,7 +33,7 @@ class Market_Summary(Resource):
 			logger.error(f"Error occurred: {str(error)}")
 			raise InternalServerError
 
-	@jwt_required()
+	# decorators = (jwt_required(),)
 	def post(self):
 		"""
 		:summary:-> This API will return of a specific market details.
