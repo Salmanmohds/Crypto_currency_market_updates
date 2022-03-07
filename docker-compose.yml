@@ -6,14 +6,15 @@ services:
     restart: always
     volumes:
       - mongo_db:/data/db
-
+    ports:
+      - 27017:27017
   api:
     build: .
     ports:
       - 5000:5000
     command: python app.py --host 0.0.0.0
     environment:
-      host: mongodb://mongo_db:27017/User12
+      host: mongo_db
     depends_on:
       - mongo_db
 

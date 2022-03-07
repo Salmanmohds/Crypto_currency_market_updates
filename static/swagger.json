@@ -1,0 +1,309 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Market updates",
+    "description": "Ths is to update latest market data",
+    "contact": {
+      "email": "mohd.salman@ltts.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.bittrex.com/api/v1.1/public/getmarketsummaries"
+    },
+    {
+      "url": "https://api.bittrex.com/api/v1.1/public/getmarketsummary"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Market Updates",
+      "description": "Get Latest Market Data"
+    },
+    {
+      "name": "User",
+      "description": ":User Authentication"
+    }
+  ],
+  "paths": {
+    "/signup": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "User need to be signup",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "The email for signup",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "The password for signup in clear text",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "password"
+            }
+          },
+          {
+            "name": "mobilenumber",
+            "in": "query",
+            "description": "The mobilenumber for signup in clear text",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "mobilenumber"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User signup Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Authentication"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "User need to be login to generate JWT token",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "The email for login",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "The password for login in clear text",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "password"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "login Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Authentication"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/market_data": {
+      "get": {
+        "tags": [
+          "Market updates"
+        ],
+        "summary": "Get Market data",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Market-updates"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token is missing",
+            "content": {}
+          },
+          "401": {
+            "description": "Invalid token passed",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Market Updates"
+        ],
+        "summary": "Get Market Detailes",
+        "parameters": [
+          {
+            "name": "market",
+            "in": "query",
+            "description": "Get details while passing market in query param",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Market-updates"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Market Detail",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "api-token"
+      }
+    },
+    "schemas": {
+      "Authentication": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Logged in Successfully"
+          },
+          "success": {
+            "type": "string",
+            "example": "true"
+          },
+          "api-token": {
+            "type": "string",
+            "example": "Jwt-token"
+          }
+        }
+      },
+      "Market-updates": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "Ask": {
+              "type": "number",
+              "format": "double",
+              "example": 0.00069307
+            },
+            "BaseVolume": {
+              "type": "number",
+              "format": "double",
+              "example": 4.63904826
+            },
+            "Bid": {
+              "type": "number",
+              "format": "float",
+              "example": 0.00069204
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2019-04-23T17:44:01.423"
+            },
+            "High": {
+              "type": "number",
+              "format": "double",
+              "example": 0.00070473
+            },
+            "Last": {
+              "type": "number",
+              "format": "double",
+              "example": 0.00069047
+            },
+            "Low": {
+              "type": "number",
+              "format": "double",
+              "example": 0.000685
+            },
+            "MarketName": {
+              "type": "string",
+              "example": "BTS-ATOM"
+            },
+            "OpenBuyOrders": {
+              "type": "integer",
+              "format": "int64",
+              "example": 433
+            },
+            "OpenSellOrders": {
+              "type": "integer",
+              "format": "int64",
+              "example": 500
+            },
+            "PrevDay": {
+              "type": "number",
+              "format": "float",
+              "example": 0.00070364
+            },
+            "Timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-02-09T08:46:09.673"
+            },
+            "Volume": {
+              "type": "number",
+              "format": "double",
+              "example": 6706.2046843
+            }
+          }
+        }
+      }
+    }
+  },
+  "securitySchemes": {
+    "ApiKeyAuth": {
+      "type": "oauth2",
+      "flows": {
+        "implicit": {
+          "authorizationUrl": "https://jwt.io/",
+          "scopes": {
+            "read:pets": "read market data"
+          }
+        }
+      },
+      "api_key": {
+        "type": "apikey",
+        "name": "api_key"
+      }
+    }
+  }
+}

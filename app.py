@@ -161,12 +161,23 @@ from database.db import initialize_db
 from flask_restful import Api
 from view.routes import initialize_routes
 from view.errors import errors
-
+from flask_swagger_ui import get_swaggerui_blueprint
 app = Flask(__name__)
 api = Api(app, errors=errors)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
+# Swagger configuration
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'
+SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Seans-Python-Flask-REST-Boilerplate"
+    }
+)
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 # MongoDB configuration
 # Todo:-> Need to check while using docker compose
 app.config['MONGODB_SETTINGS'] = {
