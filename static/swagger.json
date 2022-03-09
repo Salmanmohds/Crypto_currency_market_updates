@@ -54,13 +54,13 @@
             }
           },
           {
-            "name": "mobilenumber",
+            "name": "mobile_number",
             "in": "query",
-            "description": "The mobilenumber for signup in clear text",
+            "description": "The mobile_number for signup in clear text",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "mobilenumber"
+              "format": "mobile_number"
             }
           }
         ],
@@ -70,7 +70,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Authentication"
+                  "$ref": "#/components/schemas/Auth_Signup"
                 }
               }
             }
@@ -111,11 +111,11 @@
         ],
         "responses": {
           "200": {
-            "description": "login Successful",
+            "description": "User login Successful",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Authentication"
+                  "$ref": "#/components/schemas/Auth_Login"
                 }
               }
             }
@@ -198,12 +198,29 @@
       }
     },
     "schemas": {
-      "Authentication": {
+      "Auth_Login": {
         "type": "object",
         "properties": {
           "message": {
             "type": "string",
-            "example": "Logged in Successfully"
+            "example": "User Logged in Successfully"
+          },
+          "success": {
+            "type": "string",
+            "example": "true"
+          },
+          "api-token": {
+            "type": "string",
+            "example": "Jwt-token"
+          }
+        }
+      },
+      "Auth_Signup": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "User Signup Successfully"
           },
           "success": {
             "type": "string",

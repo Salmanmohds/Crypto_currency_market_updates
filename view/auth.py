@@ -1,13 +1,13 @@
-from flask import Flask,jsonify,Response,make_response
 import logging
-from flask import request
+from flask import request,jsonify
 from datetime import datetime
-from flask_restful import Resource,Api
+from flask_restful import Resource
 import datetime
-from flask_jwt_extended import create_access_token,create_refresh_token,get_jwt_identity
-from mongoengine.errors import FieldDoesNotExist,NotUniqueError,DoesNotExist,ValidationError,InvalidQueryError
-from .errors import InternalServerError,UnauthorizedError,UnauthorizedTokenError,SchemaValidationError,EmailAlreadyExistsError
+from flask_jwt_extended import create_access_token
+from mongoengine.errors import FieldDoesNotExist,NotUniqueError,DoesNotExist
+from .errors import InternalServerError,UnauthorizedError,SchemaValidationError,EmailAlreadyExistsError
 from database.model import User
+
 
 # logger configuration
 logger = logging.getLogger(__name__)
@@ -15,26 +15,51 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
-# Todo: Need to be check exception later
+
 class Signup_Api(Resource):
 	def post(self):
+		"""
+		:summary:-> This API will use for user Signup. The data will store in the MongoDB.
+		:request: {
+					email: salman.m@gmail.com
+					password: salman123
+					mobile_number: 5874845784
+					}
+		:return:
+			{
+    		  "result": "User Signup Successfully"
+			}
+		"""
 		try:
 			body = request.get_json()
 			user = User(**body)
 			user.hash_password()
 			user.save()
-			id = user.id
 			return jsonify({"result":"User Signup Successfully"})
-		except FieldDoesNotExist:
+		except FieldDoesNotExist as error:
+			logger.error("Error occurred => ", str(error))
 			raise SchemaValidationError
-		except NotUniqueError:
+		except NotUniqueError as error:
+			logger.error("Error occurred => ", str(error))
 			raise EmailAlreadyExistsError
-		except Exception as e:
+		except Exception as error:
+			logger.error("Error occurred => ", str(error))
 			raise InternalServerError
 
-# Todo: Need to be check exception later
+
 class Login_Api(Resource):
 	def post(self):
+		"""
+		:summary:-> This API will use for user Signup. The data will store in the MongoDB.
+		:request: {
+					email: salman.m@gmail.com
+					password: salman123
+				  }
+		:return:
+				{
+		    	  "toekn": User will get JWT-Token for accessing to our main Market Api
+				}
+		"""
 		try:
 			body = request.get_json()
 			user = User.objects.get(email=body.get('email'))
@@ -44,7 +69,8 @@ class Login_Api(Resource):
 			expires = datetime.timedelta(days=7)
 			access_token = create_access_token(identity=str(user.id), expires_delta=expires)
 			return {'token': access_token}, 200
-		except (UnauthorizedError, DoesNotExist):
+		except (UnauthorizedError, DoesNotExist) as error:
+			logger.error("Error occurred => ", str(error))
 			raise UnauthorizedError
 		except Exception as error:
 			logger.error("Error occurred => ", str(error))

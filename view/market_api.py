@@ -14,26 +14,24 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
+
 class Market_Summary(Resource):
-	# method_decorators = [jwt_required]
-	# decorators = (jwt_required(),)
 	@jwt_required()
 	def get(self):
 		"""
 		:summary:-> This api used for return all market summary updates
-		# Todo-> Need to check exception later
 		"""
 		try:
 			response = requests.get(url=market_summary_url).json()
 			return Response(response=json.dumps({"data": {"result": response}}),status=200,mimetype="application/json")
 		except (NoAuthorizationError,JWTExtendedException) as error:
-			logger.error("Invalid token => ", str(error))
+			logger.error("Error occurred => ", str(error))
 			raise UnauthorizedTokenError
 		except Exception as error:
 			logger.error(f"Error occurred: {str(error)}")
 			raise InternalServerError
 
-	# decorators = (jwt_required(),)
+	@jwt_required()
 	def post(self):
 		"""
 		:summary:-> This API will return of a specific market details.
@@ -67,13 +65,12 @@ class Market_Summary(Resource):
 				}
 			}
 		"""
-		# Todo-> Need to check exception and some validation as per requirement later
 		try:
-			market_params  = request.args.get('market','') or None
+			market_params  = request.args.get('market','')
 			response = requests.post(url=market_access_url,params={"market":market_params}).json()
 			return Response(response=json.dumps({"data": {"result": response}}), status=200, mimetype="application/json")
 		except (NoAuthorizationError,JWTExtendedException) as error:
-			logger.error("Invalid token => ", str(error))
+			logger.error("Error occurred => ", str(error))
 			raise UnauthorizedTokenError
 		except Exception as error:
 			logger.error(f"Error occurred: {str(error)}")
