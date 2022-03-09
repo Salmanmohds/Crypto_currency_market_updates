@@ -50,14 +50,14 @@ class Signup_Api(Resource):
 class Login_Api(Resource):
 	def post(self):
 		"""
-		:summary:-> This API will use for user Signup. The data will store in the MongoDB.
+		:summary:-> This API will use for user Login.
 		:request: {
 					email: salman.m@gmail.com
 					password: salman123
 				  }
 		:return:
 				{
-		    	  "toekn": User will get JWT-Token for accessing to our main Market Api
+		    	  "token": User will get JWT-Token for accessing to our main Market Api
 				}
 		"""
 		try:
