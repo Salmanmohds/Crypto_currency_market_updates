@@ -3,8 +3,6 @@ from database.model import User
 from unittest.mock import patch,Mock
 from view.auth import Signup_Api,Login_Api
 
-# class SignupTest(BaseCase):
-# @patch('flask.request')
 
 @patch('view.auth.request.get_json')
 def test_successful_signup(get_json_mock):
@@ -51,9 +49,7 @@ def test_successful_signup(get_json_mock):
 #         user_mock = User(json_data)
 #         user_mock.check_password = Mock(return_value=True)
 #         response = login_inst.post()
-        # response = self.app.post('/api/auth/signup', headers={"Content-Type": "application/json"}, data=payload)
-        # response = self.app.post('/api/auth/login', headers={"Content-Type": "application/json"}, data=payload)
+        # response = self.app.post('/view/auth/signup', headers={"Content-Type": "application/json"}, data=payload)
+        # response = self.app.post('/view/auth/login', headers={"Content-Type": "application/json"}, data=payload)
         # self.assertEqual(str, type(response.json['token']))
         # self.assertEqual(200, response.status_code)
-
-
