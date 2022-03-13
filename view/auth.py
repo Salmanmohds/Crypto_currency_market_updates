@@ -6,7 +6,7 @@ import datetime
 from flask_jwt_extended import create_access_token
 from mongoengine.errors import FieldDoesNotExist,NotUniqueError,DoesNotExist
 from .errors import InternalServerError,UnauthorizedError,SchemaValidationError,EmailAlreadyExistsError
-from database.model import User
+from Crypto_currency_market_updates.database.model import User
 
 
 # logger configuration

@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
-from database.db import initialize_db
+from Crypto_currency_market_updates.database.db import initialize_db
 from flask_restful import Api
-from view.routes import initialize_routes
-from view.errors import errors
+from Crypto_currency_market_updates.view.routes import initialize_routes
+from Crypto_currency_market_updates.view.errors import errors
 from flask_swagger_ui import get_swaggerui_blueprint
-
+from Crypto_currency_market_updates.view.market_api import market_api
 
 app = Flask(__name__)
 api = Api(app, errors=errors)
@@ -24,6 +24,7 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
         }
     )
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+app.register_blueprint(market_api)
 # MongoDB configuration
 
 # This configuration need to be use when we are running our application through Docker-compose

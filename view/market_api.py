@@ -1,4 +1,4 @@
-from flask import Response
+from flask import Response,Blueprint
 import requests
 import logging
 import json
@@ -6,14 +6,16 @@ from flask_jwt_extended import jwt_required
 from flask_jwt_extended.exceptions import NoAuthorizationError,JWTExtendedException
 from .errors import InternalServerError, UnauthorizedTokenError
 from flask import request
-from flask_restful import Resource
-from settings import market_access_url,market_summary_url
+from flask_restful import Resource,Api
+from Crypto_currency_market_updates.settings import market_access_url,market_summary_url
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
+market_api = Blueprint('market_api',__name__)
+api = Api(market_api)
 
 class Market_Summary(Resource):
 	@jwt_required()
@@ -75,3 +77,9 @@ class Market_Summary(Resource):
 		except Exception as error:
 			logger.error(f"Error occurred: {str(error)}")
 			raise InternalServerError
+
+
+from flask import jsonify
+class Home(Resource):
+	def get(self):
+		return jsonify(status_code=200)
