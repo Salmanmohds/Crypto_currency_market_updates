@@ -14,6 +14,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
+# For structurize flask application
 market_api = Blueprint('market_api',__name__)
 api = Api(market_api)
 
@@ -24,7 +25,7 @@ class Market_Summary(Resource):
 		:summary:-> This api used for return all market summary updates
 		"""
 		try:
-			response = requests.get(url=market_summary_url).json()
+			response = requests.get(url=market_summary_url).json() # Convert python object into json string
 			return Response(response=json.dumps({"data": {"result": response}}),status=200,mimetype="application/json")
 		except (NoAuthorizationError,JWTExtendedException) as error:
 			logger.error("Error occurred => ", str(error))
@@ -69,7 +70,7 @@ class Market_Summary(Resource):
 		"""
 		try:
 			market_params  = request.args.get('market','')
-			response = requests.post(url=market_access_url,params={"market":market_params}).json()
+			response = requests.post(url=market_access_url,params={"market":market_params}).json() # Convert python object into json string
 			return Response(response=json.dumps({"data": {"result": response}}), status=200, mimetype="application/json")
 		except (NoAuthorizationError,JWTExtendedException) as error:
 			logger.error("Error occurred => ", str(error))
@@ -77,9 +78,3 @@ class Market_Summary(Resource):
 		except Exception as error:
 			logger.error(f"Error occurred: {str(error)}")
 			raise InternalServerError
-
-
-from flask import jsonify
-class Home(Resource):
-	def get(self):
-		return jsonify(status_code=200)

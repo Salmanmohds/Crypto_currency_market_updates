@@ -31,8 +31,10 @@ class Signup_Api(Resource):
 			}
 		"""
 		try:
-			body = request.get_json()
-			user = User(**body)
+			email = request.json.get('email', None)
+			password = request.json.get('password', None)
+			mobile_number = request.json.get('mobile_number', None)
+			user = User(email=email,password=password,mobile_number=mobile_number)
 			user.hash_password()
 			user.save()
 			return jsonify({"result":"User Signup Successfully"})
@@ -61,9 +63,10 @@ class Login_Api(Resource):
 				}
 		"""
 		try:
-			body = request.get_json()
-			user = User.objects.get(email=body.get('email'))
-			authorized = user.check_password(body.get('password'))
+			email = request.json.get('email',None)
+			password = request.json.get('password',None)
+			user = User.objects.get(email=email)
+			authorized = user.check_password(password=password)
 			if not authorized:
 				return {'error': 'Email or password invalid'}, 401
 			expires = datetime.timedelta(days=7)

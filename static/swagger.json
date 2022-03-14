@@ -59,8 +59,7 @@
             "description": "The mobile_number for signup in clear text",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "mobile_number"
+              "type": "string"
             }
           }
         ],
@@ -158,15 +157,17 @@
         "tags": [
           "Market Updates"
         ],
-        "summary": "Get Market Detailes",
+        "summary": "Get Particular Market Detailes",
         "parameters": [
           {
             "name": "market",
             "in": "query",
-            "description": "Get details while passing market in query param",
+            "type": "string",
+            "description": "Starting with 3 letter and ending with same: btc-itc",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^d{3}-d{3}$"
             }
           }
         ],
@@ -192,9 +193,9 @@
   "components": {
     "securitySchemes": {
       "ApiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "api-token"
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     },
     "schemas": {
