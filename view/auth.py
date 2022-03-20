@@ -1,7 +1,7 @@
 import logging
-from flask import request,jsonify
+from flask import request,jsonify,Blueprint
 from datetime import datetime
-from flask_restful import Resource
+from flask_restful import Resource,Api
 import datetime
 from flask_jwt_extended import create_access_token
 from mongoengine.errors import FieldDoesNotExist,NotUniqueError,DoesNotExist
@@ -15,6 +15,9 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
+# For structurize flask application
+auth_apis = Blueprint('auth_apis',__name__)
+api=Api(auth_apis)
 
 class Signup_Api(Resource):
 	def post(self):
@@ -35,7 +38,7 @@ class Signup_Api(Resource):
 			password = request.json.get('password', None)
 			mobile_number = request.json.get('mobile_number', None)
 			user = User(email=email,password=password,mobile_number=mobile_number)
-			user.hash_password()
+			user.hash_password()   # Hashing the password
 			user.save()
 			return jsonify({"result":"User Signup Successfully"})
 		except FieldDoesNotExist as error:
@@ -66,10 +69,10 @@ class Login_Api(Resource):
 			email = request.json.get('email',None)
 			password = request.json.get('password',None)
 			user = User.objects.get(email=email)
-			authorized = user.check_password(password=password)
+			authorized = user.check_password(password=password) # checking user password from DB
 			if not authorized:
 				return {'error': 'Email or password invalid'}, 401
-			expires = datetime.timedelta(days=7)
+			expires = datetime.timedelta(days=30)
 			access_token = create_access_token(identity=str(user.id), expires_delta=expires)
 			return {'token': access_token}, 200
 		except (UnauthorizedError, DoesNotExist) as error:
@@ -78,3 +81,6 @@ class Login_Api(Resource):
 		except Exception as error:
 			logger.error("Error occurred => ", str(error))
 			raise InternalServerError
+
+api.add_resource(Signup_Api,"/user_signup")
+api.add_resource(Login_Api,"/user_Login")

@@ -3,7 +3,9 @@ services:
   mongo_db:
     container_name: db_container
     image: mongo:latest
+    # When container fail or any kind of issues then it will restart automatically.
     restart: always
+    # If somehow the data will delete or failed due to container. So Data will be persisted(permanent store)
     volumes:
       - mongo_db:/data/db
     ports:
@@ -12,7 +14,8 @@ services:
     build: .
     ports:
       - 5000:5000
-    command: python app.py --host 0.0.0.0
+    command: flask run --host 0.0.0.0
+    # Both services depend on each other. Because the mongoDB we are using in our Api.
     depends_on:
       - mongo_db
 

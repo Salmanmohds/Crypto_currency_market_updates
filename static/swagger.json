@@ -10,10 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://api.bittrex.com/api/v1.1/public/getmarketsummaries"
-    },
-    {
-      "url": "https://api.bittrex.com/api/v1.1/public/getmarketsummary"
+      "url": "http://localhost:5000/api/"
     }
   ],
   "tags": [

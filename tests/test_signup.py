@@ -49,7 +49,6 @@ def test_successful_login(get_json_mock):
         user_mock.check_password = Mock(return_value=True)
         response = login_inst.post()
         assert response == {"result": "User Login Successfully"}
-        # response = self.app.post('/view/auth/signup', headers={"Content-Type": "application/json"}, data=payload)
         # response = self.app.post('/view/auth/login', headers={"Content-Type": "application/json"}, data=payload)
         # self.assertEqual(str, type(response.json['token']))
         # self.assertEqual(200, response.status_code)

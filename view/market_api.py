@@ -9,14 +9,15 @@ from flask import request
 from flask_restful import Resource,Api
 from Crypto_currency_market_updates.settings import market_access_url,market_summary_url
 
+# logger configuration
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
                     level=logging.DEBUG)
 
 # For structurize flask application
-market_api = Blueprint('market_api',__name__)
-api = Api(market_api)
+market_apis = Blueprint('market_apis',__name__)
+api = Api(market_apis)
 
 class Market_Summary(Resource):
 	@jwt_required()
@@ -78,3 +79,5 @@ class Market_Summary(Resource):
 		except Exception as error:
 			logger.error(f"Error occurred: {str(error)}")
 			raise InternalServerError
+
+api.add_resource(Market_Summary,"/market_data")
