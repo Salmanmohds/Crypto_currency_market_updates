@@ -14,5 +14,5 @@ Run pip install -r requirements.txt to install dependencies to your local reposi
 
 #To run via docker ### Install docker and docker-compose on your machine and then RUN docker-compose up
 
-# For test cases I referred Official documentation below:->
-   # https://flask.palletsprojects.com/en/2.0.x/testing/
+-> For test cases I referred Official documentation below:->
+   https://flask.palletsprojects.com/en/2.0.x/testing/
