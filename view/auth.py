@@ -55,7 +55,7 @@ class Signup_Api(Resource):
 class Login_Api(Resource):
 	def post(self):
 		"""
-		:summary:-> This API will use for user Login.
+		:summary:-> This API will use for user Login to generate the JWT token.
 		:request: {
 					email: salman.m@gmail.com
 					password: salman123
