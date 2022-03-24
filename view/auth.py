@@ -74,7 +74,7 @@ class Login_Api(Resource):
 				return {'error': 'Email or password invalid'}, 401
 			expires = datetime.timedelta(days=30)
 			access_token = create_access_token(identity=str(user.id), expires_delta=expires)
-			return {'token': access_token}, 200
+			return {"result":"User Logged in Successfully","success":True,'token': access_token}, 200
 		except (UnauthorizedError, DoesNotExist) as error:
 			logger.error("Error occurred => ", str(error))
 			raise UnauthorizedError

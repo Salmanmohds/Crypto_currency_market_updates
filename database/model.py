@@ -16,5 +16,4 @@ class User(db.Document):
 
  # This function used for check the password
  def check_password(self, password):
-  print(self.password)
   return check_password_hash(self.password, password)

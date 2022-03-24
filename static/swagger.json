@@ -10,7 +10,8 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5000/api/"
+      "url": "http://localhost:5000/api/",
+      "description": "Development server"
     }
   ],
   "tags": [
@@ -62,17 +63,10 @@
         ],
         "responses": {
           "200": {
-            "description": "User signup Successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Auth_Signup"
-                }
-              }
-            }
+            "description": "User signup Successful"
           },
           "400": {
-            "description": "Invalid username/password supplied",
+            "description": "Please provide valid fields",
             "content": {}
           }
         }
@@ -160,7 +154,7 @@
             "name": "market",
             "in": "query",
             "type": "string",
-            "description": "Starting with 3 letter and ending with same: btc-itc",
+            "description": "User need to provide valid market details",
             "required": true,
             "schema": {
               "type": "string",
@@ -304,21 +298,11 @@
       }
     }
   },
-  "securitySchemes": {
-    "ApiKeyAuth": {
-      "type": "oauth2",
-      "flows": {
-        "implicit": {
-          "authorizationUrl": "https://jwt.io/",
-          "scopes": {
-            "read:pets": "read market data"
-          }
-        }
-      },
-      "api_key": {
-        "type": "apikey",
-        "name": "api_key"
-      }
+  "security": [
+    {
+      "ApiKeyAuth": [
+        "read: read market data"
+      ]
     }
-  }
+  ]
 }
